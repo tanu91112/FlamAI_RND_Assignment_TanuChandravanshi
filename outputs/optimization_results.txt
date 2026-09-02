@@ -1,0 +1,11 @@
+Flam R&D / AI Assignment
+========================
+
+Theta (degrees): 29.9999729322
+M: 0.0299999969
+X: 54.9999982128
+
+Mean L1 distance: 2.339562110304e-04
+Total L1 distance: 3.509343165456e-01
+Optimization cost: 9.114989679543e-09
+Function evaluations: 8
