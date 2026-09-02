@@ -15,22 +15,20 @@ The objective of this assignment is to estimate the three unknown parameters **�
 
 ## Equations
 
-\[
-x(t)=t\cos(\theta)-e^{M|t|}\sin(0.3t)\sin(\theta)+X
-\]
+```text
+x(t) = t cos(θ) - e^(M|t|) sin(0.3t) sin(θ) + X
 
-\[
-y(t)=42+t\sin(\theta)+e^{M|t|}\sin(0.3t)\cos(\theta)
-\]
+y(t) = 42 + t sin(θ) + e^(M|t|) sin(0.3t) cos(θ)
+```
 
 ## Given Constraints
 
 | Parameter | Range |
 |---|---:|
-| θ | \(0^\circ < \theta < 50^\circ\) |
-| M | \(-0.05 < M < 0.05\) |
-| X | \(0 < X < 100\) |
-| t | \(6 < t < 60\) |
+| θ | 0° < θ < 50° |
+| M | -0.05 < M < 0.05 |
+| X | 0 < X < 100 |
+| t | 6 < t < 60 |
 
 The input dataset is provided in:
 
@@ -61,70 +59,46 @@ Instead of directly optimizing the original equations, I simplified the problem 
 
 Define:
 
-\[
-x'=x-X
-\]
+```text
+x' = x - X
+y' = y - 42
+```
 
-\[
-y'=y-42
-\]
+The transformed curve is:
 
-The curve can then be expressed as:
+```text
+x' = t cos(θ) - e^(M|t|) sin(0.3t) sin(θ)
 
-\[
-\begin{bmatrix}
-x'\\
-y'
-\end{bmatrix}
-=
-t
-\begin{bmatrix}
-\cos\theta\\
-\sin\theta
-\end{bmatrix}
-+
-e^{M|t|}\sin(0.3t)
-\begin{bmatrix}
--\sin\theta\\
-\cos\theta
-\end{bmatrix}
-\]
+y' = t sin(θ) + e^(M|t|) sin(0.3t) cos(θ)
+```
 
-Rotating the coordinates by \(-\theta\) gives:
+Rotating the coordinates by `-θ` gives:
 
-\[
-u=(x-X)\cos\theta+(y-42)\sin\theta
-\]
+```text
+u = (x - X) cos(θ) + (y - 42) sin(θ)
 
-and
-
-\[
-v=-(x-X)\sin\theta+(y-42)\cos\theta
-\]
+v = -(x - X) sin(θ) + (y - 42) cos(θ)
+```
 
 For the correct parameters:
 
-\[
-u=t
-\]
+```text
+u = t
 
-and
+v = e^(M|t|) sin(0.3t)
+```
 
-\[
-v=e^{M|t|}\sin(0.3t)
-\]
+Since the given range satisfies `t > 6`:
 
-Since the given range satisfies \(t>6\):
-
-\[
-|t|=t
-\]
+```text
+|t| = t
+```
 
 Therefore:
 
-\[
-v=e^{Mt}\sin(0.3t)
-\]
+```text
+v = e^(Mt) sin(0.3t)
+```
 
 This transformation makes the relationship between the observed points and the unknown parameters easier to optimize.
 
@@ -134,9 +108,9 @@ This transformation makes the relationship between the observed points and the u
 
 I used bounded nonlinear least squares to estimate:
 
-\[
-[\theta,M,X]
-\]
+```text
+[θ, M, X]
+```
 
 subject to the parameter constraints specified in the assignment.
 
@@ -156,9 +130,9 @@ scipy.optimize.least_squares
 
 The residual function is based on the transformed relationship:
 
-\[
-r=v-e^{M|u|}\sin(0.3u)
-\]
+```text
+r = v - e^(M|u|) sin(0.3u)
+```
 
 Multiple initial guesses are used to improve robustness, and the best optimization result is selected.
 
@@ -176,17 +150,11 @@ The optimizer recovered the following values:
 
 Therefore, the final estimated parameters are:
 
-\[
-\boxed{\theta=30^\circ}
-\]
-
-\[
-\boxed{M=0.03}
-\]
-
-\[
-\boxed{X=55}
-\]
+```text
+θ = 30°
+M = 0.03
+X = 55
+```
 
 The optimized values are effectively equal to these clean values.
 
@@ -194,23 +162,23 @@ The optimized values are effectively equal to these clean values.
 
 # 📏 Validation
 
-The fitted parameters were validated by generating the predicted curve over the specified parameter range and comparing it with the observed data.
+The fitted parameters were validated using an L1 distance comparison between the predicted curve and the observed `(x, y)` data. Since the CSV does not contain the corresponding `t` values, the observed points are mapped to the recovered parameter coordinate and interpolated onto a uniform `t` grid.
 
 ## Optimization Results
 
 ```text
-Optimization cost      = 9.114989679543e-09
-Function evaluations   = 8
+Optimization cost    = 9.114989679543e-09
+Function evaluations = 8
 ```
 
 ## L1 Validation
 
 ```text
-Mean L1 distance       = 2.339562110304e-04
-Total L1 distance      = 3.509343165456e-01
+Mean L1 distance  = 2.339562110304e-04
+Total L1 distance = 3.509343165456e-01
 ```
 
-The very small optimization residual indicates that the recovered parameters closely reproduce the supplied curve.
+The very small optimization residual indicates that the recovered parameters provide an excellent fit to the supplied data.
 
 ## Validation Method
 
@@ -230,35 +198,31 @@ Therefore, the validation process:
 
 The unknown parameters are:
 
-\[
-\boxed{\theta=30^\circ,\quad M=0.03,\quad X=55}
-\]
+```text
+θ = 30°
+M = 0.03
+X = 55
+```
 
 Substituting these values into the original equations gives:
 
-\[
-\boxed{
-x(t)=t\cos(30^\circ)-e^{0.03|t|}\sin(0.3t)\sin(30^\circ)+55
-}
-\]
+```text
+x(t) = t cos(30°) - e^(0.03|t|) sin(0.3t) sin(30°) + 55
 
-\[
-\boxed{
-y(t)=42+t\sin(30^\circ)+e^{0.03|t|}\sin(0.3t)\cos(30^\circ)
-}
-\]
+y(t) = 42 + t sin(30°) + e^(0.03|t|) sin(0.3t) cos(30°)
+```
 
 where:
 
-\[
-\boxed{6<t<60}
-\]
+```text
+6 < t < 60
+```
 
 ---
 
 # 📐 Desmos Format
 
-The fitted curve can be visualized in Desmos using:
+Use the following expression in Desmos:
 
 ```text
 (
@@ -277,11 +241,9 @@ Set the parameter restriction as:
 
 # 🖼️ Visual Result
 
-![Observed data points versus fitted parametric curve](outputs/fitted_curve.png)
-
 The fitted curve closely overlaps the observed data points, providing a visual confirmation of the numerical fit.
 
-The plot also displays the estimated parameter values used to generate the fitted curve.
+![Observed data points versus fitted parametric curve](outputs/fitted_curve.png)
 
 ---
 
@@ -388,45 +350,39 @@ The program independently:
 6. Performs L1 validation.
 7. Generates the fitted curve and result files.
 
-This makes the solution reproducible from the supplied input data.
+This makes the parameter estimation and validation process reproducible from the supplied input data.
 
 ---
 
 # ⭐ Key Mathematical Insight
 
-The main insight in this solution is that the original parametric equations contain two perpendicular components:
+The original parametric equations contain two perpendicular components:
 
-\[
-t
-\begin{bmatrix}
-\cos\theta\\
-\sin\theta
-\end{bmatrix}
-\]
+```text
+t [ cos(θ) ]
+  [ sin(θ) ]
+```
 
-and
+and:
 
-\[
-e^{M|t|}\sin(0.3t)
-\begin{bmatrix}
--\sin\theta\\
-\cos\theta
-\end{bmatrix}
-\]
+```text
+e^(M|t|) sin(0.3t) [ -sin(θ) ]
+                     [  cos(θ) ]
+```
 
 By translating and rotating the observed points, the first component becomes the parameter itself:
 
-\[
-u=t
-\]
+```text
+u = t
+```
 
-while the second component becomes:
+The second component becomes:
 
-\[
-v=e^{Mt}\sin(0.3t)
-\]
+```text
+v = e^(Mt) sin(0.3t)
+```
 
-for \(t>6\).
+for `t > 6`.
 
 This reduces the original curve-fitting problem to a simpler relationship and provides a mathematically interpretable way to estimate the unknown parameters.
 
@@ -456,15 +412,17 @@ The parametric curve was successfully fitted to the supplied dataset.
 
 The recovered parameters are:
 
-\[
-\boxed{\theta=30^\circ,\quad M=0.03,\quad X=55}
-\]
+```text
+θ = 30°
+M = 0.03
+X = 55
+```
 
 The optimization achieved a cost of approximately:
 
-\[
-\boxed{9.11\times10^{-9}}
-\]
+```text
+9.11 × 10^-9
+```
 
 with only 8 function evaluations.
 
