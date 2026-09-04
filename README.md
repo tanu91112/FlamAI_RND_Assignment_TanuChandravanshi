@@ -174,13 +174,8 @@ Function evaluations = 8
 ## L1 Validation
 
 ```text
-<<<<<<< HEAD
-Mean L1 distance  = 2.339562110304e-04
-Total L1 distance = 3.509343165456e-01
-=======
 Mean L1 distance  = 1.722454566636e-04
 Total L1 distance = 2.583681849953e-01
->>>>>>> 76a2e4b (Update final solution)
 ```
 
 The very small optimization residual indicates that the recovered parameters provide an excellent fit to the supplied data.
