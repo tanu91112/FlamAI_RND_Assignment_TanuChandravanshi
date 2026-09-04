@@ -42,18 +42,21 @@ def calculate_uniform_l1_score(
     n_points=1500
 ):
     """
-    Compare observed and predicted curves using uniformly
-    sampled parameter values.
+    Calculate L1 distance between the observed curve and the
+    fitted curve at uniformly sampled parameter values.
 
-    The observed points do not contain t explicitly, so we first
-    recover their corresponding t values using the rotated
-    coordinate system.
+    The CSV contains x and y only, so the corresponding t value
+    for each observed point is recovered using the fitted
+    coordinate transformation.
 
-    We then interpolate the observed curve onto uniformly sampled
-    t values and compare it with the predicted curve.
+    The observed points are then interpolated onto a uniform
+    t-grid covering the actual observed t range.
     """
 
-    # Recover t from the transformed coordinates.
+    # -----------------------------------------------------
+    # 1. Recover the t coordinate of each observed point
+    # -----------------------------------------------------
+
     t_observed, _ = transform_points(
         x_observed,
         y_observed,
@@ -61,20 +64,30 @@ def calculate_uniform_l1_score(
         X
     )
 
+    # Sort observations by their recovered t values.
     order = np.argsort(t_observed)
 
     t_sorted = t_observed[order]
     x_sorted = x_observed[order]
     y_sorted = y_observed[order]
 
-    # Uniform sampling over the requested range.
+    # -----------------------------------------------------
+    # 2. Uniformly sample t over the actual observed range
+    # -----------------------------------------------------
+
+    t_min = t_sorted.min()
+    t_max = t_sorted.max()
+
     t_uniform = np.linspace(
-        6.000001,
-        59.999999,
+        t_min,
+        t_max,
         n_points
     )
 
-    # Predicted curve.
+    # -----------------------------------------------------
+    # 3. Generate predicted curve at the same t values
+    # -----------------------------------------------------
+
     x_pred, y_pred = curve(
         t_uniform,
         theta,
@@ -82,7 +95,10 @@ def calculate_uniform_l1_score(
         X
     )
 
-    # Interpolate observed curve.
+    # -----------------------------------------------------
+    # 4. Interpolate observed curve onto the same t values
+    # -----------------------------------------------------
+
     x_obs_interp = np.interp(
         t_uniform,
         t_sorted,
@@ -95,7 +111,10 @@ def calculate_uniform_l1_score(
         y_sorted
     )
 
-    # L1 distance.
+    # -----------------------------------------------------
+    # 5. Calculate point-wise L1 distance
+    # -----------------------------------------------------
+
     l1_per_point = (
         np.abs(x_pred - x_obs_interp)
         + np.abs(y_pred - y_obs_interp)
@@ -381,9 +400,16 @@ def main():
     # 5. Save predicted curve data
     # -----------------------------------------------------
 
+    t_observed, _ = transform_points(
+        x,
+        y,
+        theta,
+        X
+    )
+
     t_uniform = np.linspace(
-        6.000001,
-        59.999999,
+        t_observed.min(),
+        t_observed.max(),
         len(x)
     )
 
